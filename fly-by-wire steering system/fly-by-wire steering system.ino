@@ -27,25 +27,24 @@ Servo servola;
 #define la_adjust_pin A2
 #define el_adjust_pin A3
 
-float lajoy;
-float la_trim;
+
+float ru_trim;
 float el_trim;
 
-const int inPin1 = A1;
-const int inpin2 = A0;
-float p,p1;
+const int ru_data = A1;
+const int el_data = A0;
+float ru_operate,el_operate;
 
 int val = 0;
 
-const int statepin = 9;
-float state,state1;
+float ru_adjust,el_adjust;
 
 unsigned long duration1,duration2;
-String str_send_data;
+
 float str1,str;
 double prev_la,prev_el,la_error,el_error;
 
-void setup() {                
+void setup() {
   Serial.begin(115200);
   sTime = millis();
   pinMode(la_adjust_pin,INPUT);
