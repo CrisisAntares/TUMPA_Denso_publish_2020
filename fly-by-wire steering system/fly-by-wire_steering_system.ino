@@ -17,7 +17,7 @@ Have a good electronics building life!
 
 Translated with www.DeepL.com/Translator (free version)
 CrisisAntares*/
-#include<Servo.h>
+#include <Servo.h>
 
 Servo servoel;
 Servo servola;
@@ -27,60 +27,59 @@ Servo servola;
 #define la_adjust_pin A2
 #define el_adjust_pin A3
 
+float ru_trim; // sonomama
+float el_trim; // sonomama
 
-float ru_trim;
-float el_trim;
+const int ru_pin = A1;        // inpin1
+const int el_pin = A0;        // inpin2
+float ru_operate, el_operate; // p,p1
 
-const int ru_data = A1;
-const int el_data = A0;
-float ru_operate,el_operate;
+float ru_adjust, el_adjust; // state,state1
 
-int val = 0;
+float ru_trim_data, el_trim_data; // duration,duration1
 
-float ru_adjust,el_adjust;
+float ru_data, el_data; // str1,str
+double prev_ru, prev_el, ru_error, el_error;
 
-unsigned long duration1,duration2;
-
-float str1,str;
-double prev_la,prev_el,la_error,el_error;
-
-void setup() {
+void setup()
+{
   Serial.begin(115200);
-  sTime = millis();
-  pinMode(la_adjust_pin,INPUT);
-  pinMode(el_adjust_pin,INPUT);
-  pinMode(inPin1, INPUT);
-  pinMode(inpin2,INPUT);
-  pinMode(statepin,OUTPUT);
+  pinMode(la_adjust_pin, INPUT);
+  pinMode(el_adjust_pin, INPUT);
+  pinMode(ru_data, INPUT);
+  pinMode(el_data, INPUT);
   servola.attach(la_servo_pin);
   servoel.attach(el_servo_pin);
 }
- 
-void loop() {
-  state = analogRead(la_adjust_pin);
-  state1 = analogRead(el_adjust_pin);
-  duration1 = analogRead(inPin1);
-  duration2 = analogRead(inpin2);
-  str = map(state,0,1023,-60,60);
-  str1 = map(state1,0,1023,-60,60);
-  p = map(state,0,1023,30,150);
-  p1 = map(state1,0,1023,30,150);
-  la_trim = map(duration1,0,1023,30,150);
-  el_trim = map(duration2,0,1023,30,150);
 
-  la_trim = la_trim - str;
-  el_trim = el_trim - str1;
-  //N
-  if (la_trim >= (p - 10) && la_trim <= (p + 10)) {
-    la_trim = p;
+void loop()
+{
+  ru_adjust = analogRead(la_adjust_pin);
+  el_adjust = analogRead(el_adjust_pin);
+  ru_trim_data = analogRead(ru_pin);
+  el_trim_data = analogRead(el_pin);
+  ru_data = map(ru_adjust, 0, 1023, -60, 60);
+  el_data = map(el_adjust, 0, 1023, -60, 60);
+  ru_operate = map(ru_adjust, 0, 1023, 30, 150);
+  el_operate = map(el_adjust, 0, 1023, 30, 150);
+  ru_trim = map(ru_trim_data, 0, 1023, 30, 150);
+  el_trim = map(el_trim_data, 0, 1023, 30, 150);
+
+  ru_trim = ru_trim - ru_data;
+  el_trim = el_trim - el_data;
+  // N
+  if (ru_trim >= (ru_operate - 10) && ru_trim <= (ru_operate + 10))
+  {
+    ru_trim = ru_operate;
   }
-  if (el_trim >= (p1 - 10) && el_trim <= (p1 + 10) ) {
-    el_trim = p1;
+  if (el_trim >= (el_operate - 10) && el_trim <= (el_operate + 10))
+  {
+    el_trim = el_operate;
   }
- 
-  servola.write(la_trim);
+
+  servola.write(ru_trim);
   servoel.write(el_trim);
-  Serial.print(la_trim);
+  Serial.print(ru_trim);
   Serial.println(el_trim);
-  delay(100); 
+  delay(100);
 }
